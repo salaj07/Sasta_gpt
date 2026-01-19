@@ -3,8 +3,9 @@ const cookie=require('cookie')
 const jwt=require('jsonwebtoken')
 const userModel=require('../models/user.model');
 const aiService=require('../services/ai.service');
-
 const messageModel=require('../models/message.model')
+const {createMemory,queryMemory}=require('../services/vector.service');
+const { messagesValidation } = require("@pinecone-database/pinecone/dist/assistant/data/chat");
 
 async function initSocketServer(httpServer){
 
@@ -15,7 +16,7 @@ io.use(async (socket, next) => {
 
 
     const cookies=cookie.parse(socket.handshake.headers?.cookie || "");
-    // postman-> socket-> cookie-> manullay token send krna 
+    // postman-> socket-> cookie-> send token manually
     
     // console.log(cookies);
     
@@ -31,10 +32,7 @@ io.use(async (socket, next) => {
     
     }catch(err){
         next(new Error("authentication error: Invalid token"))
-        
-
     }
-
 
 })
 
@@ -48,46 +46,70 @@ socket.on("ai-message",async(messagePayload)=>{
 
     // console.log(messagePayload);
     
-    await messageModel.create({
+   const message= await messageModel.create({
         chat:messagePayload.chat,
         user:socket.user.id,
         content:messagePayload.content,
         role:"user"
     })
 
+const vectors=await aiService.generateVector(messagePayload.content)
+
+await createMemory({
+    vectors,
+    messageId:message._id,
+    metadata:{
+        chat:messagePayload.chat,
+       user:socket.user._id,
+       text:messagePayload.content
+    }
+})
+
+const memory=await queryMemory({
+    queryVector:vectors,
+    limit:3,
+    metadata:{}
+})
+
+console.log(memory);
+
     const chatHistory=(await messageModel.find({
         chat:messagePayload.chat
-    }).sort({createdAt:-1}).limit(20).lean()).reverse()
+    }).sort({createdAt:-1}).limit(3).lean()).reverse()
 
 
-    // short term memory for the chat 
-  /*       console.log(chatHistory.map(items=>{
+// short term memory for the chat 
+/*      console.log(chatHistory.map(items=>{
         return{
             role:items.role,
             parts:[{text:items.content}]
         }
     }));
- */
-
-    // console.log(chatHistory);
-    
-    
+ */  
     const response=await aiService.generateResponse(chatHistory.map(items=>{
         return{
             role:items.role,
             parts:[{text:items.content}]
         }
     }))
-    
 
-     await messageModel.create({
+     const responseMessage=await messageModel.create({
         chat:messagePayload.chat,
         user:socket.user.id,
         content:response,
         role:"model"
     })
 
-      
+    const responseVector=await aiService.generateVector(response)
+    await createMemory({
+        vectors:responseVector,
+        messageId:responseMessage._id,
+        metadata:{
+                chat:messagePayload.chat,
+                user:socket.user._id,
+                 text:response
+        }
+    })
 
     socket.emit('ai-response',{
         content:response,
@@ -99,7 +121,7 @@ socket.on("ai-message",async(messagePayload)=>{
 
 });
 
-
 }
+
 
 module.exports=initSocketServer;
