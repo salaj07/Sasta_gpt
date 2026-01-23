@@ -72,7 +72,6 @@ socket.on("ai-message",async(messagePayload)=>{
 
 
 
-
   const [memory,chatHistory]=await Promise.all([
       queryMemory({
     queryVector:vectors,
@@ -121,7 +120,6 @@ const ltm=[{
         chat:messagePayload.chat
 
     })
-
   const [responseMessage,responseVector]=await Promise.all([   
         messageModel.create({
         chat:messagePayload.chat,
@@ -134,7 +132,7 @@ const ltm=[{
    
     ]).catch(err=>console.log(err))
 
-
+ 
 
     
    await createMemory({
