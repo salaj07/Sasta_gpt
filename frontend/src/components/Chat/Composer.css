@@ -1,0 +1,124 @@
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 12px 16px;
+  border-radius: 24px;
+  background: var(--chat-composer-bg);
+  border: 1px solid var(--chat-border);
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.composer:focus-within {
+  border-color: var(--chat-composer-focus);
+  box-shadow: 0 0 0 1px var(--chat-composer-focus);
+}
+
+.composer-plus {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--chat-muted);
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.composer-plus:hover {
+  color: var(--chat-text);
+  background: var(--chat-surface-hover);
+}
+
+.compose-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 24px;
+  max-height: 200px;
+  padding: 10px 4px 10px 0;
+  border: none;
+  background: transparent;
+  color: var(--chat-text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+.compose-input::placeholder {
+  color: var(--chat-muted);
+}
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.composer-mic,
+.composer-send {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--chat-muted);
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.composer-mic:hover,
+.composer-send:hover:not(:disabled) {
+  color: var(--chat-text);
+  background: var(--chat-surface-hover);
+}
+
+.composer-send:not(:disabled) {
+  color: var(--chat-accent);
+}
+.composer-send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* --- Disclaimer (in composer-wrapper, from Home) --- */
+.composer-disclaimer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--chat-muted);
+  margin: 12px auto 0;
+  max-width: 48rem;
+  padding: 0 16px;
+}
+
+.composer-disclaimer-link {
+  color: var(--chat-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.composer-disclaimer-link:hover {
+  color: var(--chat-text);
+}
+
+@media (max-width: 520px) {
+  .composer {
+    padding: 10px 12px;
+    border-radius: 22px;
+  }
+  .composer-plus,
+  .composer-mic,
+  .composer-send {
+    width: 32px;
+    height: 32px;
+  }
+}

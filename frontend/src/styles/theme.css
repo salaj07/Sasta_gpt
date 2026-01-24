@@ -30,6 +30,8 @@
   /* UI */
   --border: rgba(187, 102, 83, 0.28);
   --shadow: 0 10px 24px rgba(58, 47, 43, 0.12);
+  --surface-hover: rgba(187, 102, 83, 0.1);
+  --error: #ef4444;
 }
 
 /* dark theme follows the user's system preference — no toggle provided */
@@ -51,6 +53,7 @@
 
     /* UI States */
     --border: rgba(29, 205, 159, 0.25);
+    --surface-hover: rgba(255, 255, 255, 0.06);
     --success: #22c55e;
     --warning: #facc15;
     --error: #ef4444;
@@ -198,4 +201,29 @@ p {
 }
 .full-width {
   width: 100%;
+}
+
+/* --- Chat page: uses main theme (light/dark from system) --- */
+.chat-page {
+  --chat-bg: var(--bg);
+  --chat-sidebar: var(--card);
+  --chat-card: var(--card);
+  --chat-surface: var(--surface);
+  --chat-surface-hover: var(--surface-hover);
+
+  --chat-text: var(--text);
+  --chat-muted: var(--muted);
+  --chat-border: var(--border);
+
+  --chat-accent: var(--primary);
+  --chat-accent-hover: var(--primary-hover);
+  --chat-accent-contrast: var(--primary-contrast);
+
+  --chat-user-bubble: var(--primary);
+  --chat-user-text: var(--primary-contrast);
+
+  --chat-composer-bg: var(--surface);
+  --chat-composer-focus: var(--primary);
+
+  --chat-error: var(--error);
 }

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -7,6 +9,8 @@ const Register = () => {
     email: "",
     password: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,8 +19,37 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Register submit", form);
-    alert("Submitted: " + JSON.stringify(form));
+    setSubmitting(true);
+
+    // console.log("Register submit", form);
+    // alert("Submitted: " + JSON.stringify(form));
+    axios
+      .post(
+        "http://localhost:3000/api/auth/register",
+        {
+          email: form.email,
+          fullName: {
+            firstName: form.firstName,
+            lastName: form.lastName,
+          },
+          password: form.password,
+        },
+        {
+          withCredentials: true,
+        },
+      )
+      .then((res) => {
+        navigate("/");
+        // console.log(res);
+        // alert("Registration successful");
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Registration failed");
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (

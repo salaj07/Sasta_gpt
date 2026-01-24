@@ -20,7 +20,7 @@ const Login = () => {
     e.preventDefault();
     setSubmitting(true);
 
-console.log(form);
+// console.log(form);
 
    axios.post("http://localhost:3000/api/auth/login",{
     email:form.email,
@@ -28,12 +28,12 @@ console.log(form);
    },
    {withCredentials:true}).then((res)=>{
    navigate("/");
-    console.log(res);
+    // console.log(res);
     // alert("Login successful");
    }).catch((err)=>{
 
     console.error(err);
-    // alert("Login failed");
+    alert("Login failed");
    }).finally(()=>{
     setSubmitting(false);
    });

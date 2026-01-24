@@ -57,9 +57,18 @@ socket.on("ai-message",async(messagePayload)=>{
     }),
 
      aiService.generateVector(messagePayload.content)
-  ]) 
+  ])  
+/* 
+const message=await messageModel.create({
+    chat:messagePayload.chat,
+    user:socket.user.id,
+    content:messagePayload.content,
+    role:"user"
+})
 
+const vectors=await aiService.generateVector(messagePayload.content)
 
+ */
     await createMemory({
     vectors,
     messageId:message._id,
@@ -77,7 +86,7 @@ socket.on("ai-message",async(messagePayload)=>{
     queryVector:vectors,
     limit:3,
     metadata:{
-        // chat: messagePayload.chat,
+        chat: messagePayload.chat,
         user: socket.user._id
     }
     }),
@@ -120,7 +129,9 @@ const ltm=[{
         chat:messagePayload.chat
 
     })
-  const [responseMessage,responseVector]=await Promise.all([   
+ 
+ 
+ /*   const [responseMessage,responseVector]=await Promise.all([   
         messageModel.create({
         chat:messagePayload.chat,
         user:socket.user.id,
@@ -130,11 +141,20 @@ const ltm=[{
 ,
       aiService.generateVector(response)
    
-    ]).catch(err=>console.log(err))
-
+    ]).catch(err=>console.log(err)) */
  
 
-    
+    const responseMessage=await messageModel.create({
+        chat:messagePayload.chat,
+        user:socket.user.id,
+        content:response,
+        role:"model"
+    })
+
+    const responseVector=await aiService.generateVector(response)
+ 
+ 
+
    await createMemory({
         vectors:responseVector,
         messageId:responseMessage._id,
