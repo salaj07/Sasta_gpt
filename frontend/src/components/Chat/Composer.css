@@ -1,56 +1,54 @@
 .composer {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 10px;
   width: 100%;
+  min-height: 100px;
+  max-height: 200px;
   max-width: 48rem;
   margin: 0 auto;
   padding: 12px 16px;
   border-radius: 24px;
   background: var(--chat-composer-bg);
-  border: 1px solid var(--chat-border);
+
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow-y: hidden;
+
 }
 
 .composer:focus-within {
   border-color: var(--chat-composer-focus);
   box-shadow: 0 0 0 1px var(--chat-composer-focus);
-}
-
-.composer-plus {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  color: var(--chat-muted);
-  cursor: pointer;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.15s ease, background 0.15s ease;
-}
-.composer-plus:hover {
-  color: var(--chat-text);
-  background: var(--chat-surface-hover);
-}
+} 
 
 .compose-input {
   flex: 1;
   min-width: 0;
-  min-height: 24px;
-  max-height: 200px;
-  padding: 10px 4px 10px 0;
-  border: none;
+  resize: none;
+  padding: 20px 10px 15px 10px;
+  box-sizing: border-box;
+  border: 0.4px none white;
+  border-radius: 20px;
   background: transparent;
   color: var(--chat-text);
   font-size: 0.95rem;
   line-height: 1.5;
-  resize: none;
   outline: none;
   font-family: inherit;
+  overflow-y: hidden;
+  height: 10vh;
+}
+
+.compose-input::-webkit-scrollbar {
+  background-color: rgba(174, 0, 0, 0.25);
+  border-radius: 6px;
+}
+.compose-input::-webkit-scrollbar {
+  width: 6px;
+  display: none;
 }
 .compose-input::placeholder {
   color: var(--chat-muted);
@@ -75,7 +73,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 .composer-mic:hover,
 .composer-send:hover:not(:disabled) {
@@ -83,9 +83,6 @@
   background: var(--chat-surface-hover);
 }
 
-.composer-send:not(:disabled) {
-  color: var(--chat-accent);
-}
 .composer-send:disabled {
   opacity: 0.4;
   cursor: default;

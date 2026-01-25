@@ -169,3 +169,130 @@
 .dropdown-item:hover {
   background: var(--chat-surface-hover);
 }
+
+/* ================= DESKTOP HEADER CLEANUP ================= */
+
+
+.chat-header-center {
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* Desktop-only toggle button */
+.desktop-only {
+  display: none;
+}
+
+/* DESKTOP */
+@media (min-width: 880px) {
+  .desktop-only {
+    display: flex;
+  }
+
+  /* REMOVE SHARE & MENU COMPLETELY */
+  .btn-share,
+  .chat-header-menu {
+    display: none !important;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 879px) {
+  .chat-header-center {
+    display: none;
+  }
+}
+
+/* ================= HEADER (DESKTOP CLEAN) ================= */
+
+.btn-sidebar-open {
+  display: none;
+}
+
+/* Desktop only */
+@media (min-width: 880px) {
+  .btn-sidebar-open {
+    display: flex;
+  }
+
+  /* remove old elements completely */
+  .btn-share,
+  .chat-header-menu {
+    display: none !important;
+  }
+}
+
+.chat-header-center {
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* hide title on mobile */
+@media (max-width: 879px) {
+  .chat-header-center {
+    display: none;
+  }
+}
+
+
+/* ================= DESKTOP HEADER FIX ================= */
+
+.desktop-only {
+  display: none;
+}
+
+/* Desktop view only */
+@media (min-width: 880px) {
+  .desktop-only {
+    display: flex;
+  }
+
+  /* Remove unwanted desktop actions */
+  .btn-share,
+  .chat-header-menu {
+    display: none !important;
+  }
+}
+
+/* Mobile untouched */
+@media (max-width: 879px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* ================= SIDEBAR TOGGLE VISIBILITY ================= */
+
+/* Mobile only */
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 879px) {
+  .mobile-only {
+    display: flex;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Desktop only */
+@media (min-width: 880px) {
+  .desktop-only {
+    display: flex;
+  }
+
+  .mobile-only {
+    display: none;
+  }
+
+  /* Remove unwanted desktop actions */
+  .btn-share,
+  .chat-header-menu {
+    display: none !important;
+  }
+}

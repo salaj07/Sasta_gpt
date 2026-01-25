@@ -34,6 +34,28 @@
   --error: #ef4444;
 }
 
+
+/* ================= FONTS ================= */
+
+@font-face {
+  font-family: aeonik;
+  font-weight: 200;
+  src: url(Fonts/AeonikTRIAL-Light.otf);
+}
+
+@font-face {
+  font-family: aeonik;
+  font-weight: 500;
+  src: url(Fonts/AeonikTRIAL-Regular.otf);
+}
+
+@font-face {
+  font-family: aeonik;
+  font-weight: 700;
+  src: url(Fonts/AeonikTRIAL-Bold.otf);
+}
+
+
 /* dark theme follows the user's system preference — no toggle provided */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -47,9 +69,9 @@
     --muted: #a0a0a0; /* secondary text */
 
     /* Accent / Brand */
-    --primary: #1dcd9f; /* mint accent */
+    --primary: #222222; /* mint accent */
     --primary-hover: #3fe0b7;
-    --primary-contrast: #031814;
+    --primary-contrast: #ffffff;
 
     /* UI States */
     --border: rgba(29, 205, 159, 0.25);
@@ -69,10 +91,13 @@ html,
 body {
   height: 100%;
 }
+
 body {
   background: var(--bg);
   color: var(--text);
+
   font-family:
+    aeonik,
     Inter,
     ui-sans-serif,
     system-ui,
@@ -81,12 +106,17 @@ body {
     Roboto,
     "Helvetica Neue",
     Arial;
+
+  font-size: 15.5px;   /* ✅ GLOBAL FONT SIZE INCREASE */
+  font-weight: 500;
+  line-height: 1.5;    /* ✅ better readability */
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.4;
   padding: 0;
   margin: 0;
 }
+
 
 .page {
   padding: var(--space-md);
@@ -117,6 +147,7 @@ h1 {
   margin-bottom: 10px;
   color: var(--text);
 }
+
 p {
   color: var(--muted);
   margin-bottom: 12px;
@@ -126,15 +157,18 @@ p {
 .form {
   width: 100%;
 }
+
 .form-group {
   margin-bottom: 12px;
 }
+
 .label {
   display: block;
   margin-bottom: 6px;
   color: var(--muted);
   font-size: 0.95rem;
 }
+
 .input {
   width: 100%;
   padding: 10px 12px;
@@ -144,11 +178,13 @@ p {
   color: var(--text);
   font-size: 0.95rem;
 }
+
 .input:focus {
   outline: none;
   box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.08);
   border-color: var(--primary);
 }
+
 .btn {
   background: var(--primary);
   color: var(--primary-contrast);
@@ -164,13 +200,16 @@ p {
   display: block;
   gap: 12px;
 }
+
 @media (min-width: 640px) {
   :root {
     --max-width: 720px;
   }
+
   h1 {
     font-size: 1.5rem;
   }
+
   .form-grid {
     display: flex;
   }
@@ -199,6 +238,7 @@ p {
 .muted {
   color: var(--muted);
 }
+
 .full-width {
   width: 100%;
 }

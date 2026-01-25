@@ -1,32 +1,36 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Sidebar.css";
 
+/* ---------- Icons ---------- */
+
 const NewChatIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg class="message-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M12 5v14" />
     <path d="M5 12h14" />
   </svg>
 );
 
 const SearchIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="11" cy="11" r="8" />
     <path d="m21 21-4.35-4.35" />
   </svg>
 );
 
 const ChatBubbleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
   </svg>
 );
 
 const PencilIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg class="pencil-edit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
   </svg>
 );
+
+/* ---------- Sidebar Component ---------- */
 
 const Sidebar = ({
   chats,
@@ -36,7 +40,7 @@ const Sidebar = ({
   onSelect,
   onDelete,
   onRename,
-  userInitials = "SA",
+  onClose,
 }) => {
   const [search, setSearch] = useState("");
   const [hoverId, setHoverId] = useState(null);
@@ -44,10 +48,17 @@ const Sidebar = ({
   const [newChatTitle, setNewChatTitle] = useState("");
   const [editingChatId, setEditingChatId] = useState(null);
   const [editingValue, setEditingValue] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
   const editInputRef = useRef(null);
 
+  /* ---------- Filter chats ---------- */
   const filtered = search.trim()
-    ? chats.filter((c) => (c.title || "").toLowerCase().includes(search.trim().toLowerCase()))
+    ? chats.filter((c) =>
+        (c.title || "")
+          .toLowerCase()
+          .includes(search.trim().toLowerCase())
+      )
     : chats;
 
   useEffect(() => {
@@ -57,60 +68,47 @@ const Sidebar = ({
     }
   }, [editingChatId]);
 
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        setShowNewChatModal(false);
-        setNewChatTitle("");
-        if (editingChatId) {
-          setEditingChatId(null);
-          setEditingValue("");
-        }
-      }
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [editingChatId]);
-
-  const handleCreateFromModal = () => {
-    onCreateNew(newChatTitle.trim() || undefined);
-    setShowNewChatModal(false);
-    setNewChatTitle("");
-  };
-
-  const handleStartEdit = (e, c) => {
-    e.stopPropagation();
-    setEditingChatId(c.id);
-    setEditingValue(c.title || "New chat");
-  };
-
   const handleSaveEdit = (chatId) => {
-    onRename?.(chatId, editingValue.trim() || "New chat");
+    onRename(chatId, editingValue.trim() || "New chat");
     setEditingChatId(null);
     setEditingValue("");
   };
 
   return (
     <aside className={`chat-sidebar ${open ? "open" : ""}`}>
-      <div className="sidebar-nav">
-        <button
-          type="button"
-          className="sidebar-nav-btn"
-          onClick={() => setShowNewChatModal(true)}
-          aria-label="New chat"
-          title="New chat"
-        >
-          <NewChatIcon />
-        </button>
-        <div
-          className="sidebar-nav-btn active"
-          aria-current="page"
-          title="Chats"
-        >
-          <ChatBubbleIcon />
-        </div>
-      </div>
+   {/* === SIDEBAR HEADER === */}
+<div className="sidebar-top">
+  <div className="sidebar-top-row">
+    {/* Logo */}
+    <div className="sidebar-logo">
+      <img src="/logo.svg" alt="Logo" />
+    </div>
 
+    {/* Close button */}
+    <button
+      className="sidebar-close-btn"
+      onClick={onClose}
+      aria-label="Close sidebar"
+    >
+      ✕
+    </button>
+  </div>
+
+  <div className="sidebar-divider" />
+
+  {/* New chat button */}
+  <button
+    className="sidebar-newchat-main"
+    onClick={() => onCreateNew()}
+  >
+    ✏️ <span>New chat</span>
+  </button>
+
+  <div className="sidebar-divider" />
+</div>
+
+
+      {/* ---------- Search ---------- */}
       <div className="sidebar-search-wrap">
         <SearchIcon />
         <input
@@ -119,126 +117,154 @@ const Sidebar = ({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="sidebar-search"
-          aria-label="Search chats"
         />
       </div>
 
+      {/* ---------- Chat List ---------- */}
+      <>
+      
+
+
+      
+      </>
       <div className="sidebar-list">
         {filtered.length === 0 && (
-          <div className="sidebar-empty">
-            {search.trim() ? "No matches" : "No chats yet"}
-          </div>
+          <div className="sidebar-empty">No chats yet</div>
         )}
+
         {filtered.map((c) => (
           <div
             key={c.id}
-            className={`sidebar-item ${c.id === activeChatId ? "active" : ""}`}
-            onClick={() => {
-              if (editingChatId !== c.id) onSelect(c);
-            }}
+            className={`sidebar-item ${
+              c.id === activeChatId ? "active" : ""
+            }`}
+            onClick={() => editingChatId !== c.id && onSelect(c)}
             onMouseEnter={() => setHoverId(c.id)}
             onMouseLeave={() => setHoverId(null)}
           >
             <ChatBubbleIcon />
+
             {editingChatId === c.id ? (
               <input
                 ref={editInputRef}
-                type="text"
                 className="sidebar-title-input"
                 value={editingValue}
                 onChange={(e) => setEditingValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSaveEdit(c.id);
-                  }
-                  e.stopPropagation();
-                }}
                 onBlur={() => handleSaveEdit(c.id)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleSaveEdit(c.id)
+                }
                 onClick={(e) => e.stopPropagation()}
-                aria-label="Rename chat"
               />
             ) : (
-              <span className="sidebar-title">{c.title || "New chat"}</span>
+              <span className="sidebar-title">
+                {c.title || "New chat"}
+              </span>
             )}
+
+            {/* Rename */}
             {editingChatId !== c.id && (
               <button
-                type="button"
-                className={`sidebar-edit ${hoverId === c.id || c.id === activeChatId ? "visible" : ""}`}
-                onClick={(e) => handleStartEdit(e, c)}
-                aria-label={`Rename ${c.title || "chat"}`}
-                title="Rename chat"
+                className={`sidebar-edit ${
+                  hoverId === c.id || c.id === activeChatId
+                    ? "visible"
+                    : ""
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingChatId(c.id);
+                  setEditingValue(c.title || "New chat");
+                }}
               >
                 <PencilIcon />
               </button>
             )}
+
+            {/* Delete (CONFIRM FIRST) */}
             <button
-              type="button"
-              className={`sidebar-delete ${hoverId === c.id || c.id === activeChatId ? "visible" : ""}`}
+              className={`sidebar-delete ${
+                hoverId === c.id || c.id === activeChatId
+                  ? "visible"
+                  : ""
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(c.id);
+                setConfirmDeleteId(c.id);
               }}
-              aria-label={`Delete ${c.title || "chat"}`}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
+              ✕
             </button>
           </div>
         ))}
       </div>
 
-      {/* New chat modal */}
+      {/* ---------- New Chat Modal ---------- */}
       {showNewChatModal && (
         <div
           className="sidebar-modal-overlay"
-          onClick={() => {
-            setShowNewChatModal(false);
-            setNewChatTitle("");
-          }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="new-chat-modal-title"
+          onClick={() => setShowNewChatModal(false)}
         >
           <div
             className="sidebar-modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 id="new-chat-modal-title" className="sidebar-modal-title">New chat</h3>
-            <p className="sidebar-modal-hint">Chat title (optional)</p>
+            <h3>New chat</h3>
             <input
-              type="text"
               className="sidebar-modal-input"
-              placeholder="e.g. Project ideas, Homework help"
+              placeholder="Chat title (optional)"
               value={newChatTitle}
               onChange={(e) => setNewChatTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleCreateFromModal();
-                }
-              }}
-              autoFocus
-              aria-label="Chat title (optional)"
             />
             <div className="sidebar-modal-actions">
               <button
-                type="button"
                 className="sidebar-modal-btn secondary"
-                onClick={() => {
-                  setShowNewChatModal(false);
-                  setNewChatTitle("");
-                }}
+                onClick={() => setShowNewChatModal(false)}
               >
                 Cancel
               </button>
               <button
-                type="button"
                 className="sidebar-modal-btn primary"
-                onClick={handleCreateFromModal}
+                onClick={() => {
+                  onCreateNew(newChatTitle || undefined);
+                  setShowNewChatModal(false);
+                  setNewChatTitle("");
+                }}
               >
                 Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ---------- DELETE CONFIRM MODAL ---------- */}
+      {confirmDeleteId && (
+        <div
+          className="sidebar-modal-overlay"
+          onClick={() => setConfirmDeleteId(null)}
+        >
+          <div
+            className="sidebar-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Delete chat?</h3>
+            <p>This will permanently delete this chat.</p>
+
+            <div className="sidebar-modal-actions">
+              <button
+                className="sidebar-modal-btn secondary"
+                onClick={() => setConfirmDeleteId(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="sidebar-modal-btn danger"
+                onClick={() => {
+                  onDelete(confirmDeleteId);
+                  setConfirmDeleteId(null);
+                }}
+              >
+                Delete
               </button>
             </div>
           </div>

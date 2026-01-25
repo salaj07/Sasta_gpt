@@ -5,26 +5,10 @@ import Sidebar from "../components/Chat/Sidebar";
 import ChatHeader from "../components/Chat/ChatHeader";
 import Messages from "../components/Chat/Messages";
 import Composer from "../components/Chat/Composer";
+import { io } from "socket.io-client";
+import axios from "axios";
 
-import axios from "axios";  
-
-/**
- * @typedef {Object} Message
- * @property {string} id
- * @property {'user' | 'ai'} role
- * @property {string} text
- */
-
-/**
- * @typedef {Object} Chat
- * @property {string} id
- * @property {string} title
- * @property {Message[]} messages
- */
-
-const STORAGE_KEY = "gpt_clone_chats_v1";
-
-const makeId = () => String(Date.now());
+const makeId = () => Date.now().toString();
 
 const Home = () => {
   const [chats, setChats] = useState([]);
@@ -33,8 +17,19 @@ const Home = () => {
   const [input, setInput] = useState("");
   const [showSidebar, setShowSidebar] = useState(true);
   const [isWaiting, setIsWaiting] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [socket, setSocket] = useState(null);
+const waitingRef = useRef(false);
 
+
+  const messagesEndRef = useRef(null);
+  const activeChatIdRef = useRef(null);
+
+  /* keep active chat ref updated for socket */
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+  }, [activeChatId]);
+
+  /* responsive sidebar */
   useEffect(() => {
     const handleResize = () => setShowSidebar(window.innerWidth >= 880);
     handleResize();
@@ -42,166 +37,167 @@ const Home = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  /* INITIAL LOAD (NO CHAT AUTO OPEN) */
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") setShowSidebar(false);
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, []);
+    let tempSocket;
 
-  /* fetch chats from API on load */
-  useEffect(() => {
-    async function fetchChats() {
+    async function init() {
       try {
-        const res = await axios.get("http://localhost:3000/api/chat/", {
+        const res = await axios.get("http://localhost:3000/api/chat", {
           withCredentials: true,
         });
-  
-        const list = (res.data.chats || []).map((c) => ({
-          id: c._id,
-          title: c.title || "New chat",
-          messages: c.messages || [],
-        }));
-        setChats(list.reverse());
-        if (list.length > 0) {
-          setActiveChatId(list[0].id);
-          setMessages(list[0].messages || []);
-        }
+
+        setChats(
+          (res.data.chats || [])
+            .map((c) => ({
+              id: c._id,
+              title: c.title || "New chat",
+            }))
+            .reverse(),
+        );
+
+        setActiveChatId(null);
+        setMessages([]);
+
+        tempSocket = io("http://localhost:3000", {
+          withCredentials: true,
+        });
+
+        tempSocket.on("ai-response", (data) => {
+          if (!data?.content) return;
+
+          setMessages((prev) => [
+            ...prev,
+            { id: makeId(), role: "ai", text: data.content },
+          ]);
+
+          requestAnimationFrame(() => {
+    if (waitingRef.current) {
+      setIsWaiting(false);
+      waitingRef.current = false;
+    }
+  });
+
+        });
+
+        setSocket(tempSocket);
       } catch (err) {
-        console.error("Failed to fetch chats:", err);
+        console.error("Init failed:", err);
       }
     }
 
-    
-    fetchChats();
+    init();
+    return () => tempSocket?.disconnect();
   }, []);
 
-
-
+  /* auto scroll */
   useEffect(() => {
-    // scroll to bottom on new messages
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    // persist chats when chats change
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
-    } catch (err) {
-      console.error("Failed to save chats:", err);
-    }
-  }, [chats]);
-
-  const saveActiveMessages = (updater) => {
-    setMessages((prevMsgs) => {
-      const nextMessages =
-        typeof updater === "function" ? updater(prevMsgs) : updater;
-      setChats((prev) =>
-        prev.map((c) =>
-          c.id === activeChatId
-            ? { ...c, messages: nextMessages, title: deriveTitle(nextMessages) }
-            : c,
-        ),
-      );
-  
-   
-      return nextMessages;
-    
-    });
-
-    
-  };
-
-  const deriveTitle = (msgs) => {
-    const firstUser = msgs.find((m) => m.role === "user");
-    if (!firstUser) return "New chat";
-    return (
-      firstUser.text.slice(0, 32) + (firstUser.text.length > 32 ? "…" : "")
+  /* CHAT ACTIONS */
+  /* 
+  const createNewChat = async () => {
+    const res = await axios.post(
+      "http://localhost:3000/api/chat",
+      { title: "New chat" },
+      { withCredentials: true },
     );
+
+    const chat = {
+      id: res.data.chat._id,
+      title: res.data.chat.title,
+    };
+
+    setChats((prev) => [chat, ...prev]);
+    setActiveChatId(chat.id);
+    setMessages([]);
   };
+ */
 
   const createNewChat = async (optionalTitle) => {
-    const title = (optionalTitle && String(optionalTitle).trim())
-      ? String(optionalTitle).trim()
-      : "New chat";
-      
+    const title =
+      optionalTitle && optionalTitle.trim() ? optionalTitle.trim() : "New chat";
 
     const response = await axios.post(
-      "http://localhost:3000/api/chat/",
+      "http://localhost:3000/api/chat",
       { title },
-      { withCredentials: true }
+      { withCredentials: true },
     );
 
     const chat = response.data.chat;
-    const newChat = { id: chat._id, title: chat.title, messages: [] };
-    setChats((s) => [newChat, ...s]);
+
+    const newChat = {
+      id: chat._id,
+      title: chat.title, // ✅ USE BACKEND TITLE
+      messages: [],
+    };
+
+    setChats((prev) => [newChat, ...prev]);
     setActiveChatId(chat._id);
     setMessages([]);
+  };
 
+  const selectChat = async (chat) => {
+    setActiveChatId(chat.id);
+    setIsWaiting(false);
+
+    const res = await axios.get(
+      `http://localhost:3000/api/chat/messages/${chat.id}`,
+      { withCredentials: true },
+    );
+
+    setMessages(res.data.messages || []);
     if (window.innerWidth < 880) setShowSidebar(false);
   };
 
-  const renameChat = (chatId, newTitle) => {
-    const title = (newTitle && String(newTitle).trim()) ? String(newTitle).trim() : "New chat";
+  const renameChat = async (chatId, title) => {
     setChats((prev) =>
       prev.map((c) => (c.id === chatId ? { ...c, title } : c)),
     );
+
+    await axios.put(
+      `http://localhost:3000/api/chat/${chatId}`,
+      { title },
+      { withCredentials: true },
+    );
   };
 
-  const selectChat = (chat) => {
-    setActiveChatId(chat.id);
-    setMessages(chat.messages || []);
-    if (window.innerWidth < 880) setShowSidebar(false);
-  };
+  const deleteChat = async (chatId) => {
+    setChats((prev) => prev.filter((c) => c.id !== chatId));
+    if (chatId === activeChatId) {
+      setActiveChatId(null);
+      setMessages([]);
+    }
 
-  const mockAiReply = (text) => {
-    const lower = text.toLowerCase();
-    if (/hello|hi|hey/.test(lower)) return "Hey 👋\n\nHello! How's it going? 😊";
-    if (/how are you|how're you/.test(lower)) return "I'm doing great, thanks for asking! How can I help you today?";
-    return `I received your message — "${text}". This is a mock reply; connect a real API for full responses.`;
-  };
-
-  const sendMessage = (optionalText) => {
-    const trimmed = (optionalText ?? input.trim()).trim();
-    if (!trimmed) return;
-    const userMsg = { id: makeId(), role: "user", text: trimmed };
-    saveActiveMessages((prev) => [...prev, userMsg]);
-    if (optionalText == null) setInput("");
-    setIsWaiting(true);
-
-    setTimeout(() => {
-      const aiMsg = { id: makeId(), role: "ai", text: mockAiReply(trimmed) };
-      saveActiveMessages((prev) => [...prev, aiMsg]);
-      setIsWaiting(false);
-    }, 700 + Math.random() * 800);
-  };
-
-  const handleRegenerate = (aiMessage) => {
-    const idx = messages.findIndex((m) => m.id === aiMessage?.id);
-    if (idx < 0) return;
-    const userMsg = messages[idx - 1];
-    if (!userMsg || userMsg.role !== "user") return;
-    saveActiveMessages((prev) => prev.slice(0, idx - 1));
-    sendMessage(userMsg.text);
-  };
-
-  const deleteChat = (id) => {
-    setChats((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      if (id === activeChatId) {
-        if (next.length > 0) {
-          setActiveChatId(next[0].id);
-          setMessages(next[0].messages || []);
-        } 
-        
-       
-      }
-      return next;
+    await axios.delete(`http://localhost:3000/api/chat/${chatId}`, {
+      withCredentials: true,
     });
   };
+
+  /* SEND MESSAGE */
+
+  const sendMessage = () => {
+    if (!input.trim() || !socket || !activeChatId) return;
+
+    const userMsg = {
+      id: makeId(),
+      role: "user",
+      text: input.trim(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    waitingRef.current = true;
+    setIsWaiting(true);
+
+    socket.emit("ai-message", {
+      content: userMsg.text,
+      chat: activeChatId,
+    });
+  };
+
+  /* RENDER */
 
   return (
     <div className={`chat-page ${showSidebar ? "" : "sidebar-hidden"}`}>
@@ -211,35 +207,57 @@ const Home = () => {
         open={showSidebar}
         onCreateNew={createNewChat}
         onSelect={selectChat}
-        onDelete={deleteChat}
         onRename={renameChat}
+        onDelete={deleteChat}
+        onClose={() => setShowSidebar(false)}
       />
-
-      {showSidebar && (
-        <div
-          className="sidebar-backdrop"
-          onClick={() => setShowSidebar(false)}
-          aria-hidden="true"
-        />
-      )}
 
       <div className="chat-main">
         <ChatHeader
-          onToggleSidebar={() => setShowSidebar((s) => !s)}
+          onOpenSidebar={() => setShowSidebar(true)}
+          isSidebarOpen={showSidebar}
         />
 
-        <div className="messages-wrapper">
-          <Messages
-            messages={messages}
-            containerRef={messagesEndRef}
-            isWaiting={isWaiting}
-            onRegenerate={handleRegenerate}
-          />
-        </div>
+        {/* WELCOME / HOME SCREEN */}
+        {!activeChatId ? (
+          <div className="chat-welcome">
+            <div className="chat-welcome-card">
+              <h1 className="chat-welcome-title">
+                Hey 👋 I’m <span>Sasta Classmate</span>
+              </h1>
 
-        <div className="composer-wrapper">
-          <Composer input={input} setInput={setInput} onSend={sendMessage} />
-        </div>
+              <p className="chat-welcome-text">
+                Your friendly AI buddy for doubts, explanations, coding help,
+                and last-minute study support — without judging 😄
+              </p>
+
+              <button
+                className="start-chat-btn"
+                onClick={() => createNewChat()}
+              >
+                Start Chat
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="messages-wrapper">
+              <Messages
+                messages={messages}
+                containerRef={messagesEndRef}
+                isWaiting={isWaiting}
+              />
+            </div>
+
+            <div className="composer-wrapper">
+              <Composer
+                input={input}
+                setInput={setInput}
+                onSend={sendMessage}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
