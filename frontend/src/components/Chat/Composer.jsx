@@ -46,7 +46,7 @@ const Composer = ({ input = "", setInput, onSend }) => {
       <textarea
         ref={textareaRef}
         className="compose-input"
-        contenteditable="true"
+     
         placeholder="Ask anything"
         value={input}
         onChange={(e) => setInput(e.target.value)}

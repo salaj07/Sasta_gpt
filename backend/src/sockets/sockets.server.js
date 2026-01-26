@@ -126,7 +126,7 @@ async function initSocketServer(httpServer) {
         },
       ];
 
-      // const response=await aiService.generateResponse([...ltm, ...stm])
+  
 
       let response;
 
@@ -149,17 +149,6 @@ async function initSocketServer(httpServer) {
         chat: messagePayload.chat,
       });
 
-      /*   const [responseMessage,responseVector]=await Promise.all([   
-        messageModel.create({
-        chat:messagePayload.chat,
-        user:socket.user.id,
-        content:response,
-        role:"model"
-    })
-,
-      aiService.generateVector(response)
-   
-    ]).catch(err=>console.log(err)) */
 
       const responseMessage = await messageModel.create({
         chat: messagePayload.chat,

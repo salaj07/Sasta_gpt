@@ -46,7 +46,7 @@ const ChatHeader = ({ onOpenSidebar, isSidebarOpen }) => {
       </div>
 
       <div className="chat-header-center">
-        Sasta Classmate
+          <span style={{ color: "var(--primary-hover)" }}>BackBench</span> Buddy
       </div>
 
       <div className="chat-header-right" />

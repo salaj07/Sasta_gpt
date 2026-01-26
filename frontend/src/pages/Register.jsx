@@ -110,6 +110,14 @@ const Register = () => {
             Create account
           </button>
         </form>
+        <div style={{ marginTop: 12, textAlign: "center" }}>
+          <p>
+            Already have an account?{" "}
+            <Link to="/login" className="link">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/theme.css";
-import "../components/Chat/Layout.css";
+import "../components/Layout/Layout.css";
 import Sidebar from "../components/Chat/Sidebar";
 import ChatHeader from "../components/Chat/ChatHeader";
 import Messages from "../components/Chat/Messages";
@@ -18,8 +18,7 @@ const Home = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [isWaiting, setIsWaiting] = useState(false);
   const [socket, setSocket] = useState(null);
-const waitingRef = useRef(false);
-
+  const waitingRef = useRef(false);
 
   const messagesEndRef = useRef(null);
   const activeChatIdRef = useRef(null);
@@ -72,12 +71,11 @@ const waitingRef = useRef(false);
           ]);
 
           requestAnimationFrame(() => {
-    if (waitingRef.current) {
-      setIsWaiting(false);
-      waitingRef.current = false;
-    }
-  });
-
+            if (waitingRef.current) {
+              setIsWaiting(false);
+              waitingRef.current = false;
+            }
+          });
         });
 
         setSocket(tempSocket);
@@ -96,24 +94,6 @@ const waitingRef = useRef(false);
   }, [messages]);
 
   /* CHAT ACTIONS */
-  /* 
-  const createNewChat = async () => {
-    const res = await axios.post(
-      "http://localhost:3000/api/chat",
-      { title: "New chat" },
-      { withCredentials: true },
-    );
-
-    const chat = {
-      id: res.data.chat._id,
-      title: res.data.chat.title,
-    };
-
-    setChats((prev) => [chat, ...prev]);
-    setActiveChatId(chat.id);
-    setMessages([]);
-  };
- */
 
   const createNewChat = async (optionalTitle) => {
     const title =
@@ -223,7 +203,7 @@ const waitingRef = useRef(false);
           <div className="chat-welcome">
             <div className="chat-welcome-card">
               <h1 className="chat-welcome-title">
-                Hey 👋 I’m <span>Sasta Classmate</span>
+                Hey 👋 I’m <span>Backbench</span> <span style={{ color: "white" }}>Buddy</span>
               </h1>
 
               <p className="chat-welcome-text">

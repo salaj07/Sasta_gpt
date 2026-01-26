@@ -54,6 +54,11 @@
   color: var(--chat-muted);
 }
 
+/* Increase placeholder font size for better readability */
+.compose-input::placeholder {
+  font-size: 1.2rem;
+}
+
 .composer-actions {
   display: flex;
   align-items: center;
@@ -107,15 +112,20 @@
   color: var(--chat-text);
 }
 
-@media (max-width: 520px) {
+@media (max-width: 620px) {
   .composer {
-    padding: 10px 12px;
+    padding: 10px 12px 10px 12px;
+     
     border-radius: 22px;
   }
-  .composer-plus,
-  .composer-mic,
+ 
   .composer-send {
     width: 32px;
     height: 32px;
   }
+.compose-input::placeholder {
+  font-size: 1.25rem;
+}
+
+
 }
