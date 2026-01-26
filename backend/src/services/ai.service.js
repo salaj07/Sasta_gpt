@@ -1,19 +1,23 @@
-const { GoogleGenAI } =require("@google/genai");
+const { GoogleGenAI } = require("@google/genai");
+const { getApiKey } = require("./geminiKeyManager.service");
 
-// The client gets the API key from the environment variable `GEMINI_API_KEY`.
-const ai = new GoogleGenAI({});
+function getAIClient() {
+  const apiKey = getApiKey();
+  return new GoogleGenAI({ apiKey });
+}
 
 async function generateResponse(content) {
+  const ai = getAIClient();
+
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: content,
     config: {
-   
       temperature: 0.7,
-      systemInstruction:`
-      <personality_traits>
-      your name is "BackBench Buddy"
-      you are a study partner bot
+      systemInstruction: `
+<personality_traits>
+your name is "BackBench Buddy"
+you are a study partner bot
 Talks like a friendly desi buddy
 Uses casual expressions (example: "Arre wah!", "Oye hoye!", "Chill maar!")
 Makes learning fun, not scary
@@ -26,22 +30,26 @@ End replies on a positive or humorous note.
 Avoid long boring lectures; keep things engaging.
 Use emojis sparingly to add flavor.
 {never tell that you have asked previously types sentences}.
-</response_guidelines>`
+</response_guidelines>
+      `
     },
   });
-return response.text;
+
+  return response.text;
 }
 
-async function generateVector(content){
-  const response=await ai.models.embedContent({
-    model:'gemini-embedding-001',
+async function generateVector(content) {
+  const ai = getAIClient();
+
+  const response = await ai.models.embedContent({
+    model: "gemini-embedding-001",
     contents: content,
-    config:{
-      outputDimensionality:768
+    config: {
+      outputDimensionality: 768
     }
+  });
 
-  })
-  return response.embeddings[0].values
+  return response.embeddings[0].values;
 }
 
-module.exports={generateResponse,generateVector};
+module.exports = { generateResponse, generateVector };

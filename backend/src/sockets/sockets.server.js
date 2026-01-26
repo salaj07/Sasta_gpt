@@ -22,7 +22,7 @@ async function initSocketServer(httpServer) {
     const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
     // postman-> socket-> cookie-> send token manually
 
-    // console.log(cookies);
+
 
     // If token cookie is missing, allow connection for local debugging but mark as guest.
     if (!cookies.token) {
@@ -45,8 +45,7 @@ async function initSocketServer(httpServer) {
   });
 
   io.on("connection", async (socket) => {
-    // console.log(" new socket connection",socket.id);
-
+   
     socket.on("ai-message", async (messagePayload) => {
       // If the socket is unauthenticated (guest), log and return a quick mock response
       if (!socket.user) {
@@ -132,7 +131,7 @@ async function initSocketServer(httpServer) {
 
       try {
         response = await aiService.generateResponse([...ltm, ...stm]);
-        console.log("AI RESPONSE GENERATED:", response);
+        // console.log("AI RESPONSE GENERATED:", response);
       } catch (err) {
         console.error("AI ERROR:", err.message);
 

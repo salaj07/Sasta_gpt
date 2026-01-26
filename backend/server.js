@@ -9,5 +9,5 @@ connectDB();
 initSocketServer(httpServer);
 
 httpServer.listen(3000, () => {
-  console.log("server started");
+  // console.log("server started");
 });

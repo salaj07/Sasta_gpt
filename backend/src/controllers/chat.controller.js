@@ -1,6 +1,5 @@
 const chatModel=require('../models/chat.model')
 const messageModel = require("../models/message.model");
-// const { deleteChatMemory } = require("../services/vector.service");
 const { deleteChatMemoryByIds } = require("../services/vector.service");
 
 async function createChat(req,res){
@@ -87,37 +86,7 @@ async function renameChat(req, res) {
     res.status(500).json({ success: false });
   }
 }
-/* 
-async function deleteChat(req, res) {
 
-     try {
-    const { chatId } = req.params;
-
-    // delete chat (only if owned by user)
-    const chat = await chatModel.findOneAndDelete({
-      _id: chatId,
-      user: req.user._id,
-    });
-
-    if (!chat) {
-      return res.status(404).json({ success: false });
-    }
-
-    // delete all messages belonging to this chat
-    await messageModel.deleteMany({ chat: chatId });
-     await deleteChatMemory({
-      chatId,
-      userId: req.user._id,
-    });
-
-    res.status(200).json({ success: true });
-  } catch (err) {
-    console.error("Delete chat error:", err);
-    res.status(500).json({ success: false });
-  }
-
-
-} */
 
 async function deleteChat(req, res) {
 try {
@@ -140,7 +109,7 @@ try {
     // delete mongo messages
     await messageModel.deleteMany({ chat: chatId });
 
-    // 🔥 delete pinecone vectors by ID
+    //  delete pinecone vectors by ID
     await deleteChatMemoryByIds(messageIds);
 
     res.status(200).json({ success: true });
