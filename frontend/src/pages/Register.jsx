@@ -25,7 +25,7 @@ const Register = () => {
     // alert("Submitted: " + JSON.stringify(form));
     axios
       .post(
-        "http://localhost:3000/api/auth/register",
+        "https://backbench-buddy.onrender.com/api/auth/register",
         {
           email: form.email,
           fullName: {

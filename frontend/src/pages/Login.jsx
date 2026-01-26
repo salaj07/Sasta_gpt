@@ -1,42 +1,44 @@
 import React, { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
-  const navigate=useNavigate();
-  
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-  setForm({...form,[name]:value});
+    setForm({ ...form, [name]: value });
   };
-
-  
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-// console.log(form);
+    // console.log(form);
 
-   axios.post("http://localhost:3000/api/auth/login",{
-    email:form.email,
-    password:form.password
-   },
-   {withCredentials:true}).then((res)=>{
-   navigate("/");
-    // console.log(res);
-    // alert("Login successful");
-   }).catch((err)=>{
-
-    console.error(err);
-    alert("Login failed");
-   }).finally(()=>{
-    setSubmitting(false);
-   });
+    axios
+      .post(
+        "https://backbench-buddy.onrender.com/api/auth/login",
+        {
+          email: form.email,
+          password: form.password,
+        },
+        { withCredentials: true },
+      )
+      .then((res) => {
+        navigate("/");
+        // console.log(res);
+        // alert("Login successful");
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Login failed");
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -50,7 +52,6 @@ const Login = () => {
               className="input"
               name="email"
               type="email"
-              
               onChange={handleChange}
               placeholder="you@example.com"
             />
@@ -62,7 +63,6 @@ const Login = () => {
               className="input"
               name="password"
               type="password"
-             
               onChange={handleChange}
               placeholder="Enter your password"
             />

@@ -42,9 +42,12 @@ const Home = () => {
 
     async function init() {
       try {
-        const res = await axios.get("http://localhost:3000/api/chat", {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          "https://backbench-buddy.onrender.com/api/chat",
+          {
+            withCredentials: true,
+          },
+        );
 
         setChats(
           (res.data.chats || [])
@@ -58,7 +61,7 @@ const Home = () => {
         setActiveChatId(null);
         setMessages([]);
 
-        tempSocket = io("http://localhost:3000", {
+        tempSocket = io("https://backbench-buddy.onrender.com", {
           withCredentials: true,
         });
 
@@ -100,7 +103,7 @@ const Home = () => {
       optionalTitle && optionalTitle.trim() ? optionalTitle.trim() : "New chat";
 
     const response = await axios.post(
-      "http://localhost:3000/api/chat",
+      "https://backbench-buddy.onrender.com/api/chat",
       { title },
       { withCredentials: true },
     );
@@ -123,7 +126,7 @@ const Home = () => {
     setIsWaiting(false);
 
     const res = await axios.get(
-      `http://localhost:3000/api/chat/messages/${chat.id}`,
+      `https://backbench-buddy.onrender.com/api/chat/messages/${chat.id}`,
       { withCredentials: true },
     );
 
@@ -137,7 +140,7 @@ const Home = () => {
     );
 
     await axios.put(
-      `http://localhost:3000/api/chat/${chatId}`,
+      `https://backbench-buddy.onrender.com/api/chat/${chatId}`,
       { title },
       { withCredentials: true },
     );
@@ -150,9 +153,12 @@ const Home = () => {
       setMessages([]);
     }
 
-    await axios.delete(`http://localhost:3000/api/chat/${chatId}`, {
-      withCredentials: true,
-    });
+    await axios.delete(
+      `https://backbench-buddy.onrender.com/api/chat/${chatId}`,
+      {
+        withCredentials: true,
+      },
+    );
   };
 
   /* SEND MESSAGE */
@@ -203,7 +209,8 @@ const Home = () => {
           <div className="chat-welcome">
             <div className="chat-welcome-card">
               <h1 className="chat-welcome-title">
-                Hey 👋 I’m <span>Backbench</span> <span style={{ color: "white" }}>Buddy</span>
+                Hey 👋 I’m <span>Backbench</span>{" "}
+                <span style={{ color: "white" }}>Buddy</span>
               </h1>
 
               <p className="chat-welcome-text">
