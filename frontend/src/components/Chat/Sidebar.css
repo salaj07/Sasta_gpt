@@ -45,21 +45,17 @@
 }
 
 /* .sidebar-logo img { */
-  /* background-color: white; */
-  
-  /* position: relative; */
-  /* height: 40px;    */
-  /* try 36–48px */
-  /* width: auto;   */
-  /* align-items: center; */
-  /* object-fit: contain; */
+/* background-color: white; */
 
+/* position: relative; */
+/* height: 40px;    */
+/* try 36–48px */
+/* width: auto;   */
+/* align-items: center; */
+/* object-fit: contain; */
 
-  /* object-fit: fill; */
+/* object-fit: fill; */
 /* } */
-
-
-
 
 .sidebar-close-btn {
   border: none;
@@ -375,17 +371,14 @@
   }
 }
 
-
 .sidebar-top-row {
   display: flex;
-  ;
   align-items: center;
   height: 50px;
   /* background-color: tomato; */
 }
 
 .sidebar-logo {
-
   text-align: center;
   height: 100%;
   position: relative;
@@ -396,12 +389,10 @@
   /* background-color: turquoise; */
 }
 
-
 .sidebar-logo h4 {
-  font-weight:500;
- color: var(--primary-hover);
+  font-weight: 500;
+  color: var(--primary-hover);
 }
 .sidebar-logo h5 {
-  font-weight:500;
-
+  font-weight: 500;
 }
