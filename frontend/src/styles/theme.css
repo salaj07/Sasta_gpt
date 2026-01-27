@@ -23,7 +23,7 @@
   --primary: #bb6653; /* clay red */
   --primary-hover: #f08b51;
   --primary-contrast: #ffffff;
-
+  --black:#0b0b0b;
   /* Supporting accent */
   --secondary: #f08b51; /* warm orange highlight */
 
@@ -266,4 +266,9 @@ p {
   --chat-composer-focus: var(--primary);
 
   --chat-error: var(--error);
+}
+
+
+.chat-welcome .buddy{
+  color: var(--white);
 }

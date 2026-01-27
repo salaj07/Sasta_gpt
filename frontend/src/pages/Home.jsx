@@ -210,7 +210,7 @@ const Home = () => {
             <div className="chat-welcome-card">
               <h1 className="chat-welcome-title">
                 Hey 👋 I’m <span>Backbench</span>{" "}
-                <span style={{ color: "black" }}>Buddy</span>
+                <span className="buddy">Buddy</span>
               </h1>
 
               <p className="chat-welcome-text">
